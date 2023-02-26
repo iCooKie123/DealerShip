@@ -1,0 +1,279 @@
+{
+	"info": {
+		"_postman_id": "b5083dc4-747a-4716-8f96-37c66c909e9f",
+		"name": "DealerShipApi Homework",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25804612"
+	},
+	"item": [
+		{
+			"name": "GetAllCarsWithoutLinks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/GetAllCarsWithoutLinks",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"GetAllCarsWithoutLinks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllCarsWithLinks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/GetAllCarsWithLinks",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"GetAllCarsWithLinks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCarById(5 in this case)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/GetCarById/5",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"GetCarById",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddCar",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 0,\r\n  \"brand\": \"Ford\",\r\n  \"model\": \"Focus\",\r\n  \"year\": 2016,\r\n  \"color\": \"grey\",\r\n  \"price\": 19000,\r\n  \"description\": \"cea mai misto masina ever\",\r\n  \"isSold\": false,\r\n  \"acquisitionDate\":null,\r\n  \"links\": null\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/AddCar",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"AddCar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateCar(10 in this case)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\":10,\r\n  \"brand\": \"string\",\r\n  \"model\": \"string\",\r\n  \"year\": 0,\r\n  \"color\": \"string\",\r\n  \"price\": 0,\r\n  \"description\": \"string\",\r\n  \"isSold\": false,\r\n  \"acquisitionDate\": \"string\",\r\n  \"links\": [\r\n    {\r\n      \"href\": \"string\",\r\n      \"rel\": \"string\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/UpdateCar/10",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"UpdateCar",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteCar(11 in this case)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/DeleteCar/11",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"DeleteCar",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllCustomers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/GetAllCustomers",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"GetAllCustomers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCustomerById(4 in this case)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/GetCustomerById?id=4",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"GetCustomerById"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer with ID 9 bought Car with id 12",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/CustomerIDBoughtCarId?customerId=9&carId=12",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"CustomerIDBoughtCarId"
+					],
+					"query": [
+						{
+							"key": "customerId",
+							"value": "9"
+						},
+						{
+							"key": "carId",
+							"value": "12"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ListAllCustomerWithBoughtCars",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/ListAllCustomerWithBoughtCars",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"ListAllCustomerWithBoughtCars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Rich Customers(price more than x)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7174/api/DealerShip/GetCustomersWithCarsThatAreWorthMoreThan/50001",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7174",
+					"path": [
+						"api",
+						"DealerShip",
+						"GetCustomersWithCarsThatAreWorthMoreThan",
+						"50001"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

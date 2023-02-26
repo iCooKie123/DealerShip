@@ -10,11 +10,11 @@ namespace DealerShip.Models
             var cars = new List<Car>
 {
     new Car { Id = 1, Brand = "Ford", Model = "Mustang", Year = 1969, Color = "red", Price = 50000, IsSold = true, CustomerId=1},
-new Car { Id = 2, Brand = "Chevrolet", Model = "Camaro", Year = 1970, Color = "blue", Price = 55000, IsSold = false },
-new Car { Id = 3, Brand = "Dodge", Model = "Challenger", Year = 1971, Color = "green", Price = 60000, IsSold = false },
-new Car { Id = 4, Brand = "Plymouth", Model = "Barracuda", Year = 1972, Color = "yellow", Price = 65000, IsSold = false },
-new Car { Id = 5, Brand = "Pontiac", Model = "GTO", Year = 1968, Color = "black", Price = 70000, IsSold = false },
-new Car { Id = 6, Brand = "BMW", Model = "M3", Year = 2018, Color = "gray", Price = 80000, IsSold = false },
+new Car { Id = 2, Brand = "Chevrolet", Model = "Camaro", Year = 1970, Color = "blue", Price = 55000, IsSold = true, CustomerId=3 },
+new Car { Id = 3, Brand = "Dodge", Model = "Challenger", Year = 1971, Color = "green", Price = 60000, IsSold = true, CustomerId=3 },
+new Car { Id = 4, Brand = "Plymouth", Model = "Barracuda", Year = 1972, Color = "yellow", Price = 65000, IsSold = true, CustomerId=1 },
+new Car { Id = 5, Brand = "Pontiac", Model = "GTO", Year = 1968, Color = "black", Price = 70000, IsSold = true,CustomerId=2 },
+new Car { Id = 6, Brand = "BMW", Model = "M3", Year = 2018, Color = "gray", Price = 80000, IsSold = true, CustomerId=4 },
 new Car { Id = 7, Brand = "Mercedes-Benz", Model = "AMG GT", Year = 2019, Color = "white", Price = 90000, IsSold = false },
 new Car { Id = 8, Brand = "Audi", Model = "R8", Year = 2020, Color = "red", Price = 100000, IsSold = false },
 new Car { Id = 9, Brand = "Tesla", Model = "Model S", Year = 2021, Color = "blue", Price = 110000, IsSold = false },
@@ -45,20 +45,11 @@ new Car { Id = 20, Brand = "Bugatti", Model = "Chiron", Year = 2021, Color = "or
     new Customer { Id = 9, Name = "Isabella", BirthDate = "2005-01-21" },
     new Customer { Id = 10, Name = "Jack", BirthDate = "1992-07-19" });
 
-            /*
-            modelBuilder.Entity<Link>().HasData(
-                new Link { CarId = 1, Href="api/GetCarById/1",Rel="Find this car" },
-                new Link { CarId=1,Href="api/UpdateCarById/1",Rel="Update this car"},
-                new Link { CarId = 1, Href = "api/DeleteCarById/1", Rel = "Delete this car" },
-                new Link { CarId=1,Href="api/CustomerIdBoughtCarId",Rel="buy this car"},
 
-
-                new Link { CarId = 2, Href = "api/GetCarById/2", Rel = "Find this car" },
-                new Link { CarId = 2, Href = "api/UpdateCarById/2", Rel = "Update this car" },
-                new Link { CarId = 2, Href = "api/DeleteCarById/2", Rel = "Delete this car" },
-                new Link { CarId = 2, Href = "api/CustomerIdBoughtCarId", Rel = "buy this car" }
-                );
-            */
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.BoughtCars)
+                .WithOne(c => c.Customer)
+                .HasForeignKey(c => c.CustomerId);
         }
     }
 }

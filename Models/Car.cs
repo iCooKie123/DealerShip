@@ -24,9 +24,10 @@ namespace DealerShip.Models
         public string? AcquisitionDate { get; set; } = null;
         [JsonIgnore]
         public int? CustomerId { get; set; } = null;
-        [JsonIgnore(Condition =JsonIgnoreCondition.WhenWritingDefault)]
-        public List<Link>? Links { get; set; } = new List<Link>();
-
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<Link>? Links { get; set; } = null;
+        [JsonIgnore]
+        public Customer? Customer { get; set; } = null;
 
 
 

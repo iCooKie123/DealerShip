@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DealerShip.Controllers
 {
@@ -15,7 +16,7 @@ namespace DealerShip.Controllers
     {
         private readonly DealerShipContext _context;
 
-        
+
         public DealerShipController(DealerShipContext context)
         {
             _context = context;
@@ -23,26 +24,32 @@ namespace DealerShip.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllCars")]
+        [Route("GetAllCarsWithoutLinks")]
         public async Task<ActionResult> GetAllCars()
         {
             var cars = await _context.Cars.ToArrayAsync();
-            
+
             return Ok(cars);
         }
 
 
         [HttpGet]
-        [Route("AllLinks")]
+        [Route("GetAllCarsWithLinks")]
         public async Task<ActionResult> PutLinksOnAllCars()
         {
             var cars = await _context.Cars.ToArrayAsync();
-            var links = new List<Link>();
+            
             foreach (var car in cars)
             {
-                var link = new Link {Href = $"https://localhost:44394/api/DealerShip/GetCarById/{car.Id}" + car.Id, Rel = "self" };
+                car.Links = new List<Link>();
+                var link = new Link { Href = $"https://localhost:7174/api/DealerShip/GetCarById/{car.Id}", Rel = "self" };
+                var link2 = new Link { Href = $"https://localhost:7174/api/DealerShip/UpdateCar/{car.Id}", Rel = "update" };
+                var link3 = new Link { Href = $"https://localhost:7174/api/DealerShip/DeleteCar/{car.Id}", Rel = "delete" };
+                
                 car.Links.Add(link);
-
+                car.Links.Add(link2);
+                car.Links.Add(link3);
+                _context.Entry(car).State = EntityState.Modified;
             }
             await _context.SaveChangesAsync();
             return Ok(cars);
@@ -53,13 +60,24 @@ namespace DealerShip.Controllers
         public async Task<ActionResult> GetCarById(int id)
         {
             var car = await _context.Cars.FindAsync(id);
-            
-
             if (car == null)
             {
                 return NotFound();
             }
 
+            if (car.Links == null)
+            {
+                car.Links = new List<Link>();
+                var link = new Link { Href = $"https://localhost:7174/api/DealerShip/GetCarById/{car.Id}", Rel = "self" };
+                var link2 = new Link { Href = $"https://localhost:7174/api/DealerShip/UpdateCar/{car.Id}", Rel = "update" };
+                var link3 = new Link { Href = $"https://localhost:7174/api/DealerShip/DeleteCar/{car.Id}", Rel = "delete" };
+
+                car.Links.Add(link);
+                car.Links.Add(link2);
+                car.Links.Add(link3);
+                _context.Entry(car).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
             return Ok(car);
         }
 
@@ -74,9 +92,9 @@ namespace DealerShip.Controllers
 
         [HttpPut]
         [Route("UpdateCar/{id}")]
-        public async Task<ActionResult> UpdateCar(int id,Car car)
+        public async Task<ActionResult> UpdateCar(int id, Car car)
         {
-            if(id != car.Id)
+            if (id != car.Id)
             {
                 return BadRequest();
             }
@@ -91,11 +109,11 @@ namespace DealerShip.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if(!_context.Cars.Any(car=> car.Id==id))
+                if (!_context.Cars.Any(car => car.Id == id))
                 {
                     return NotFound();
                 }
-                
+
                 else
                 {
                     throw;
@@ -114,7 +132,7 @@ namespace DealerShip.Controllers
             }
             else if (car.IsSold)
             {
-                return BadRequest("Car is already sold, cannot modify");
+                return BadRequest("Car is already sold, cannot delete");
             }
             _context.Cars.Remove(car);
             await _context.SaveChangesAsync();
@@ -125,59 +143,12 @@ namespace DealerShip.Controllers
         [Route("DeleteAllCars")]
         public async Task<ActionResult> DeleteAllCars()
         {
-            var cars = _context.Cars.Where(c=>c.IsSold==false);
+            var cars = _context.Cars.Where(c => c.IsSold == false);
             _context.Cars.RemoveRange(cars);
             await _context.SaveChangesAsync();
             return Ok("Deleted all cars,except sold ones");
         }
-        [HttpPost]
-        [Route("DeleteAllCarsByMake")]
-        public async Task<ActionResult> DeleteAllCarsByMake(string brand)
-        {
-            var cars = await _context.Cars.Where(c => c.Brand == brand).ToArrayAsync();
-            
-            _context.Cars.RemoveRange(cars);
-            await _context.SaveChangesAsync();
-            return Ok(cars);
-        }
-        [HttpPost]
-        [Route("DeleteAllCarsByModel")]
-        public async Task<ActionResult> DeleteAllCarsByModel(string model)
-        {
-            var cars = await _context.Cars.Where(c => c.Model == model).ToArrayAsync();
-            _context.Cars.RemoveRange(cars);
-            await _context.SaveChangesAsync();
-            return Ok(cars);
-        }
 
-        [HttpPost]
-        [Route("DeleteAllCarsByYear")]
-        public async Task<ActionResult> DeleteAllCarsByYear(int year)
-        {
-            var cars = await _context.Cars.Where(c => c.Year == year).ToArrayAsync();
-            _context.Cars.RemoveRange(cars);
-            await _context.SaveChangesAsync();
-            return Ok(cars);
-        }
-        [HttpPost]
-        [Route("DeleteAllCarsByPrice")]
-        public async Task<ActionResult> DeleteAllCarsByPrice(double price)
-        {
-            var cars = await _context.Cars.Where(c => c.Price == price).ToArrayAsync();
-            _context.Cars.RemoveRange(cars);
-            await _context.SaveChangesAsync();
-            return Ok(cars);
-        }
-
-        [HttpPost]
-        [Route("DeleteAllCarsByColor")]
-        public async Task<ActionResult> DeleteAllCarsByColor(string color)
-        {
-            var cars = await _context.Cars.Where(c => c.Color == color).ToArrayAsync();
-            _context.Cars.RemoveRange(cars);
-            await _context.SaveChangesAsync();
-            return Ok(cars);
-        }
 
 
         [HttpGet]
@@ -200,30 +171,29 @@ namespace DealerShip.Controllers
         [Route("CustomerIDBoughtCarId")]
         public async Task<ActionResult> CustomerIDBoughtCarID(int customerId, int carId)
         {
-            if(!_context.Customers.Any(c=>c.Id==customerId) || !_context.Cars.Any(c => c.Id == carId))
+            if (!_context.Customers.Any(c => c.Id == customerId) || !_context.Cars.Any(c => c.Id == carId))
             {
                 return BadRequest();
             }
+
             var customer = await _context.Customers.FindAsync(customerId);
-            var car= await _context.Cars.FindAsync(carId);
+            var car = await _context.Cars.FindAsync(carId);
+
             if (car.IsSold)
             {
-                return BadRequest("car is already sold");
+                return BadRequest("Car is already sold.");
+            }
+            if (customer.BoughtCars == null)
+            {
+                customer.BoughtCars = new List<Car>();
             }
 
+            car.IsSold = true;
+            car.CustomerId = customerId;
             customer.BoughtCars.Add(car);
-            car.IsSold= true;
-            car.CustomerId= customer.Id;
-            ;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
 
-                return BadRequest();
-            }
+            await _context.SaveChangesAsync();
+
             return Ok(customer);
         }
 
@@ -232,14 +202,99 @@ namespace DealerShip.Controllers
         public async Task<ActionResult> ListAllCustomersWithCars()
         {
 
-            
-            var customers = await _context.Customers.Where(c => c.BoughtCars != null).ToArrayAsync();
-            var cars = await _context.Cars.Where(c => c.IsSold == true && c.CustomerId != null).ToArrayAsync();
-            return Ok(customers);
 
-            
-            
-            
+            var customers = await _context.Customers.Where(c => c.BoughtCars.Count != 0).ToArrayAsync();
+            var cars = await _context.Cars.Where(c => c.IsSold == true && c.CustomerId != null).ToArrayAsync();
+            foreach (var car in cars)
+            {
+                if (car.Links == null)
+                {
+                    car.Links = new List<Link>();
+
+                    var link = new Link { Href = $"https://localhost:7174/api/DealerShip/GetCarById/{car.Id}", Rel = "self" };
+
+                    car.Links.Add(link);
+                    _context.Entry(car).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return Ok(customers);
         }
+
+        [HttpGet]
+        [Route("GetCustomersWithCarsThatAreWorthMoreThan/{price}")]
+        public async Task<ActionResult> ListAllCustomersWithCars(double price)
+        {
+            var customers = await _context.Customers.Where(c => c.BoughtCars.Any(c => c.Price >= price)).ToArrayAsync();
+            var cars = await _context.Cars.Where(c => c.IsSold == true && c.CustomerId != null).ToArrayAsync();
+
+            foreach (var car in cars)
+            {
+                if (car.Links == null)
+                {
+                    car.Links = new List<Link>();
+
+                    var link = new Link { Href = $"https://localhost:7174/api/DealerShip/GetCarById/{car.Id}", Rel = "self" };
+
+                    car.Links.Add(link);
+                    _context.Entry(car).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return Ok(customers);
+        }
+
+        ///functii care nu au ajuns in "prod" pentru ca sunt prea multe si relaticv useless
+        /*
+       [HttpPost]
+       [Route("DeleteAllCarsByMake")]
+       public async Task<ActionResult> DeleteAllCarsByMake(string brand)
+       {
+           var cars = await _context.Cars.Where(c => c.Brand == brand&&c.IsSold==false).ToArrayAsync();
+           _context.Cars.RemoveRange(cars);
+           await _context.SaveChangesAsync();
+           return Ok(cars);
+       }
+       [HttpPost]
+       [Route("DeleteAllCarsByModel")]
+       public async Task<ActionResult> DeleteAllCarsByModel(string model)
+       {
+           var cars = await _context.Cars.Where(c => c.Model == model && c.IsSold == false).ToArrayAsync();
+           _context.Cars.RemoveRange(cars);
+           await _context.SaveChangesAsync();
+           return Ok(cars);
+       }
+
+       [HttpPost]
+       [Route("DeleteAllCarsByYear")]
+       public async Task<ActionResult> DeleteAllCarsByYear(int year)
+       {
+           var cars = await _context.Cars.Where(c => c.Year == year && c.IsSold == false).ToArrayAsync();
+           _context.Cars.RemoveRange(cars);
+           await _context.SaveChangesAsync();
+           return Ok(cars);
+       }
+       [HttpPost]
+       [Route("DeleteAllCarsByPrice")]
+       public async Task<ActionResult> DeleteAllCarsByPrice(double price)
+       {
+           var cars = await _context.Cars.Where(c => c.Price == price && c.IsSold == false).ToArrayAsync();
+           _context.Cars.RemoveRange(cars);
+           await _context.SaveChangesAsync();
+           return Ok(cars);
+       }
+
+       [HttpPost]
+       [Route("DeleteAllCarsByColor")]
+       public async Task<ActionResult> DeleteAllCarsByColor(string color)
+       {
+           var cars = await _context.Cars.Where(c => c.Color == color && c.IsSold == false).ToArrayAsync();
+           _context.Cars.RemoveRange(cars);
+           await _context.SaveChangesAsync();
+           return Ok(cars);
+       }
+       */
+
+
     }
 }

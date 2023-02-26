@@ -17,9 +17,9 @@ namespace DealerShip.Models
         [Required]
         public string BirthDate { get; set; } = string.Empty;
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public List<Car> BoughtCars { get; set; } = new List<Car>();
-
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<Car>? BoughtCars { get; set; } = null;
+        
         
     }
 
